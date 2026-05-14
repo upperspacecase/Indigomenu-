@@ -357,12 +357,18 @@ body {
   border-radius: 0;
 }
 
-.pdf-embed {
+.pdf-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0;
+}
+
+.pdf-pages img {
   width: 100%;
-  height: 80vh;
-  border: 1.5px solid var(--border);
-  background: #fff;
+  height: auto;
   display: block;
+  background: #fff;
 }
 
 .acc-content a {

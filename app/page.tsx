@@ -205,14 +205,12 @@ export default function Home() {
         </AccordionItem>
 
         <AccordionItem id="coffee-pdf" icon={<CoffeeIcon />} title="Coffee (PDF)" subtitle="Original menu document">
-          <iframe
-            src="/menus/coffee.pdf"
-            title="Coffee menu PDF"
-            className="pdf-embed"
-          />
-          <p className="menu-note" style={{ textAlign: "center", marginTop: 10 }}>
-            <a href="/menus/coffee.pdf" target="_blank" rel="noopener noreferrer">Abrir PDF em separador novo · Open PDF in a new tab</a>
-          </p>
+          <div className="pdf-pages">
+            {[1, 2, 3].map(n => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={n} src={`/menus/coffee-page-${n}.jpg`} alt={`Coffee menu page ${n}`} />
+            ))}
+          </div>
         </AccordionItem>
 
         <AccordionItem id="food" icon={<ForkKnifeIcon />} title="Comida | Food">
