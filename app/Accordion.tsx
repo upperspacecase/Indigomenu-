@@ -55,7 +55,15 @@ export function AccordionItem({ id, icon, title, subtitle, children }: Accordion
         </span>
       </button>
       <div id={panelId} className="acc-panel" role="region">
-        <div className="acc-content">
+        <div
+          className="acc-content"
+          onClick={(e) => {
+            // Don't close when clicking interactive content (links, buttons, inputs)
+            const target = e.target as HTMLElement;
+            if (target.closest("a, button, input, textarea, select, label")) return;
+            if (open) setOpen(false);
+          }}
+        >
           {children ?? <div className="acc-placeholder">Content coming soon.</div>}
         </div>
       </div>

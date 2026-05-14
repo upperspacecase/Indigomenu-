@@ -207,6 +207,17 @@ export default function Home() {
           </MenuSection>
         </AccordionItem>
 
+        <AccordionItem id="coffee-pdf" icon={<CoffeeIcon />} title="Coffee (PDF)" subtitle="Original menu document">
+          <iframe
+            src="/menus/coffee.pdf"
+            title="Coffee menu PDF"
+            className="pdf-embed"
+          />
+          <p className="menu-note" style={{ textAlign: "center", marginTop: 10 }}>
+            <a href="/menus/coffee.pdf" target="_blank" rel="noopener noreferrer">Abrir PDF em separador novo · Open PDF in a new tab</a>
+          </p>
+        </AccordionItem>
+
         <AccordionItem id="food" icon={<ForkKnifeIcon />} title="Comida | Food">
           <MenuSection title="Aperitivos do Atlântico" titleEn="Atlantic Appetizers">
             <MenuItem pt="Couvert" en="Couvert"
