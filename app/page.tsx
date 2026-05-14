@@ -87,8 +87,7 @@ function AllergenLegend() {
   );
 }
 
-const LOCATION_URL =
-  "https://www.google.com/search?sca_esv=b3f6a4e4ace9f962&sxsrf=AE3TifPzX7D8KNVONiOg8VAKFtG2ycV_Xg:1752849047963&si=AMgyJEtREmoPL4P1I5IDCfuA8gybfVI2d5Uj7QMwYCZHKDZ-E_FvKawwhxHzZrgIjAQRwlDzy3UajmhogSUh7AzBMoPn8I9bjql7wpFgfn8wIrPRuWiLVrcAYYiWBBfmDhwHQDjNgM26&q=Indigo+Ericeira+Reviews&sa=X&ved=2ahUKEwiJ7eTGz8aOAxW_TKQEHbEPKZMQ0bkNegQINxAE&biw=1440&bih=654&dpr=2";
+const LOCATION_URL = "https://maps.app.goo.gl/GfaCxmPPWkssACue6";
 const REVIEW_URL = "https://g.page/r/CZ8zdLERFf8JEBM/review";
 const BEACHCAM_URL = "https://beachcam.meo.pt/livecams/foz-do-lizandro/";
 const INSTAGRAM_URL = "https://www.instagram.com/indigo_beachclub/";
