@@ -12,7 +12,6 @@ import {
   ReviewIcon,
   WebcamIcon,
   InstagramIcon,
-  AsteriskIcon,
   AllergenIcon,
   type Allergen,
 } from "./icons";
@@ -91,7 +90,6 @@ const LOCATION_URL = "https://maps.app.goo.gl/GfaCxmPPWkssACue6";
 const REVIEW_URL = "https://g.page/r/CZ8zdLERFf8JEBM/review";
 const BEACHCAM_URL = "https://beachcam.meo.pt/livecams/foz-do-lizandro/";
 const INSTAGRAM_URL = "https://www.instagram.com/indigo_beachclub/";
-const LINKTREE_URL = "https://linktr.ee/indigoericeira";
 const PHONE = "926863781";
 
 export default function Home() {
@@ -780,10 +778,6 @@ export default function Home() {
           <a className="contact-row" href={`tel:${PHONE}`}>
             <PhoneIcon />
             <span>{PHONE}</span>
-          </a>
-          <a className="contact-row" href={LINKTREE_URL} target="_blank" rel="noopener noreferrer">
-            <AsteriskIcon />
-            <span>linktr.ee/indigoericeira</span>
           </a>
         </AccordionItem>
         <LinkItem icon={<ReviewIcon />} title="Review your Experience" href={REVIEW_URL} />
