@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none">
+  <rect x="60" y="10" width="80" height="80" stroke="#0E4A7F" stroke-width="3" fill="none"/>
+  <circle cx="100" cy="50" r="7" fill="#E08A3A"/>
+  <text x="100" y="135" text-anchor="middle"
+        font-family="'Pinyon Script','Allura','Great Vibes',cursive"
+        font-size="48" fill="#0E4A7F" font-style="italic">indigo</text>
+</svg>
