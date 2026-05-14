@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ChevronDownIcon } from "./icons";
+import { ChevronDownIcon, ExternalLinkIcon } from "./icons";
 
 export type AccordionItemProps = {
   id: string;
@@ -10,6 +10,28 @@ export type AccordionItemProps = {
   subtitle?: string;
   children?: ReactNode;
 };
+
+export type LinkItemProps = {
+  icon: ReactNode;
+  title: string;
+  subtitle?: string;
+  href: string;
+};
+
+export function LinkItem({ icon, title, subtitle, href }: LinkItemProps) {
+  return (
+    <a className="acc-item link-item" href={href} target="_blank" rel="noopener noreferrer">
+      <span className="acc-icon">{icon}</span>
+      <span className="acc-titles">
+        <span className="acc-title">{title}</span>
+        {subtitle && <span className="acc-sub" style={{ display: "block" }}>{subtitle}</span>}
+      </span>
+      <span className="acc-caret" aria-hidden="true">
+        <ExternalLinkIcon />
+      </span>
+    </a>
+  );
+}
 
 export function AccordionItem({ id, icon, title, subtitle, children }: AccordionItemProps) {
   const [open, setOpen] = useState(false);
