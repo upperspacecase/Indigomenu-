@@ -89,27 +89,28 @@ function MenuSection({
 
 function AllergenLegend() {
   const { locale } = useLocale();
-  const items: { kind: Allergen; pt: string; en: string }[] = [
-    { kind: "gluten", pt: "Glúten", en: "Gluten" },
-    { kind: "eggs", pt: "Ovos", en: "Eggs" },
-    { kind: "dairy", pt: "Leite", en: "Dairy" },
-    { kind: "peanuts", pt: "Amendoim", en: "Peanuts" },
-    { kind: "lupin", pt: "Tremoço", en: "Lupin" },
-    { kind: "soja", pt: "Soja", en: "Soya" },
-    { kind: "sulphites", pt: "Sulfitos", en: "Sulphites" },
-    { kind: "mustard", pt: "Mostarda", en: "Mustard" },
-    { kind: "nuts", pt: "Frutos casca rija", en: "Nuts" },
-    { kind: "crustaceans", pt: "Crustáceos", en: "Crustaceans" },
-    { kind: "mollusks", pt: "Moluscos", en: "Mollusks" },
-    { kind: "fish", pt: "Peixe", en: "Fish" },
-    { kind: "sesame", pt: "Semente Sésamo", en: "Sesame Seeds" },
+  type Row = { kind: Allergen } & Record<typeof locale, string>;
+  const items: Row[] = [
+    { kind: "gluten",      pt: "Glúten",            en: "Gluten",        es: "Gluten",          fr: "Gluten",            de: "Gluten",          nl: "Gluten" },
+    { kind: "eggs",        pt: "Ovos",              en: "Eggs",          es: "Huevos",          fr: "Œufs",              de: "Eier",            nl: "Eieren" },
+    { kind: "dairy",       pt: "Leite",             en: "Dairy",         es: "Lácteos",         fr: "Produits laitiers", de: "Milchprodukte",   nl: "Zuivel" },
+    { kind: "peanuts",     pt: "Amendoim",          en: "Peanuts",       es: "Cacahuetes",      fr: "Cacahuètes",        de: "Erdnüsse",        nl: "Pinda's" },
+    { kind: "lupin",       pt: "Tremoço",           en: "Lupin",         es: "Altramuces",      fr: "Lupin",             de: "Lupinen",         nl: "Lupine" },
+    { kind: "soja",        pt: "Soja",              en: "Soya",          es: "Soja",            fr: "Soja",              de: "Soja",            nl: "Soja" },
+    { kind: "sulphites",   pt: "Sulfitos",          en: "Sulphites",     es: "Sulfitos",        fr: "Sulfites",          de: "Sulfite",         nl: "Sulfieten" },
+    { kind: "mustard",     pt: "Mostarda",          en: "Mustard",       es: "Mostaza",         fr: "Moutarde",          de: "Senf",            nl: "Mosterd" },
+    { kind: "nuts",        pt: "Frutos casca rija", en: "Nuts",          es: "Frutos secos",    fr: "Fruits à coque",    de: "Nüsse",           nl: "Noten" },
+    { kind: "crustaceans", pt: "Crustáceos",        en: "Crustaceans",   es: "Crustáceos",      fr: "Crustacés",         de: "Krustentiere",    nl: "Schaaldieren" },
+    { kind: "mollusks",    pt: "Moluscos",          en: "Mollusks",      es: "Moluscos",        fr: "Mollusques",        de: "Weichtiere",      nl: "Weekdieren" },
+    { kind: "fish",        pt: "Peixe",             en: "Fish",          es: "Pescado",         fr: "Poisson",           de: "Fisch",           nl: "Vis" },
+    { kind: "sesame",      pt: "Semente Sésamo",    en: "Sesame Seeds",  es: "Semillas de sésamo", fr: "Graines de sésame", de: "Sesamsamen",   nl: "Sesamzaad" },
   ];
   return (
     <div className="allergen-legend">
       {items.map(i => (
         <div key={i.kind} className="row">
           <AllergenIcon kind={i.kind} />
-          <span>{locale === "pt" ? i.pt : i.en}</span>
+          <span>{i[locale]}</span>
         </div>
       ))}
     </div>
@@ -123,7 +124,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/indigo_beachclub/";
 const PHONE = "926863781";
 
 export default function Home() {
-  const { t } = useLocale();
+  const { t, resolveCopy } = useLocale();
   return (
     <main className="page">
       <header className="topbar">
@@ -591,7 +592,7 @@ export default function Home() {
           </MenuSection>
 
           <MenuSection title="Espirituosas" titleEn="Fine Spirits">
-            <h4>Vodka e Rum (5 cl)</h4>
+            <h4>{resolveCopy({ pt: "Vodka e Rum (5 cl)", en: "Vodka & Rum (5 cl)" })}</h4>
             <MenuItem pt="Eristoff" en="Eristoff" price="€ 10.00" />
             <MenuItem pt="Grey Goose" en="Grey Goose" price="€ 12.00" />
             <MenuItem pt="Bacardi" en="Bacardi" price="€ 10.00" />
@@ -608,7 +609,7 @@ export default function Home() {
             <MenuItem pt="Hendricks" en="Hendricks" price="€ 14.00" />
             <MenuItem pt="Monkey 47" en="Monkey 47" price="€ 16.00" />
 
-            <h4>Vermutes e bitters (6 cl)</h4>
+            <h4>{resolveCopy({ pt: "Vermutes e bitters (6 cl)", en: "Vermouths & bitters (6 cl)" })}</h4>
             <MenuItem pt="Martini (Bitter / Riserva Ambrato / Riserva Rubino)" en="Martini" price="€ 7.00" />
             <MenuItem pt="Martini Rosso, Bianco" en="Martini Rosso, Bianco" price="€ 7.00" />
             <MenuItem pt="Averna Amaro" en="Averna Amaro" price="€ 10.00" />
@@ -619,14 +620,14 @@ export default function Home() {
             <MenuItem pt="Aberfeldy 12 / Glenmorangie 10 / Nikka" en="Aberfeldy 12 / Glenmorangie 10 / Nikka" price="€ 14.00" />
             <MenuItem pt="Laphroaig" en="Laphroaig" price="€ 16.00" />
 
-            <h4>Tequila e Mezcal (5 cl)</h4>
+            <h4>{resolveCopy({ pt: "Tequila e Mezcal (5 cl)", en: "Tequila & Mezcal (5 cl)" })}</h4>
             <MenuItem pt="Jose Cuervo" en="Jose Cuervo" price="€ 10.00" />
             <MenuItem pt="Patrón Silver" en="Patrón Silver" price="€ 12.00" />
             <MenuItem pt="Patrón Reposado" en="Patrón Reposado" price="€ 14.00" />
             <MenuItem pt="Patrón Añejo" en="Patrón Añejo" price="€ 16.00" />
             <MenuItem pt="Mezcal Monte Lobos" en="Mezcal Monte Lobos" price="€ 12.00" />
 
-            <h4>Cognac e Aguardente</h4>
+            <h4>{resolveCopy({ pt: "Cognac e Aguardente", en: "Cognac & Spirits" })}</h4>
             <MenuItem pt="Pisco 1615 / Cachaça" en="Pisco 1615 / Cachaça" price="€ 12.00" />
             <MenuItem pt="Mavem / Medronho Arbun" en="Mavem / Medronho Arbun" price="€ 14.00" />
             <MenuItem pt="Brandy Ysabel Regina" en="Brandy Ysabel Regina" price="€ 16.00" />
