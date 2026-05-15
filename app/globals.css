@@ -849,3 +849,284 @@ body {
   opacity: 0.65;
   padding: 0 8px;
 }
+
+/* ---------- Top bar / language selector ---------- */
+
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  min-height: 36px;
+}
+
+.lang-selector {
+  position: relative;
+}
+
+.lang-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 6px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--indigo);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.lang-button:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.lang-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.lang-caret {
+  opacity: 0.75;
+}
+
+.lang-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 190px;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(14, 74, 127, 0.18);
+  z-index: 20;
+}
+
+.lang-option {
+  display: grid;
+  grid-template-columns: 32px 1fr 20px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--indigo);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.lang-option:hover {
+  background: rgba(14, 74, 127, 0.08);
+}
+
+.lang-option[data-active="true"] {
+  background: rgba(14, 74, 127, 0.06);
+  font-weight: 600;
+}
+
+.lang-option-code {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: 12px;
+}
+
+.lang-option-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--orange);
+}
+
+.lang-option-check svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- Fallback banner (non-PT/EN locales) ---------- */
+
+.fallback-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  background: rgba(224, 138, 58, 0.12);
+  border: 1px solid rgba(224, 138, 58, 0.4);
+  border-radius: 8px;
+  color: var(--orange);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.fallback-banner button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.fallback-banner button:hover {
+  background: rgba(224, 138, 58, 0.18);
+}
+
+.fallback-banner button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- Best-seller pill (inline on menu items) ---------- */
+
+.bestseller-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(224, 138, 58, 0.16);
+  color: var(--orange);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.bestseller-pill svg {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+/* ---------- Category filter ---------- */
+
+.filter {
+  margin: 0 0 18px;
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--indigo-soft);
+  opacity: 0.85;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.filter-chip {
+  padding: 5px 12px;
+  border: 1.2px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--indigo);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-chip:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.filter-chip[data-active="true"] {
+  background: var(--indigo);
+  border-color: var(--indigo);
+  color: #fff;
+}
+
+.filter-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border: none;
+  background: transparent;
+  color: var(--indigo-soft);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.filter-clear:hover {
+  background: rgba(14, 74, 127, 0.06);
+}
+
+.filter-clear svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* ---------- Admin bestseller toggle ---------- */
+
+.admin-bestseller-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid rgba(14, 74, 127, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--indigo-soft);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-bestseller-toggle .admin-bestseller-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(14, 74, 127, 0.2);
+}
+
+.admin-bestseller-toggle.on {
+  background: rgba(224, 138, 58, 0.14);
+  border-color: rgba(224, 138, 58, 0.5);
+  color: var(--orange);
+}
+
+.admin-bestseller-toggle.on .admin-bestseller-dot {
+  background: var(--orange);
+}
+
+.admin-bestseller-toggle:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.admin-bestseller-toggle.on:hover {
+  background: rgba(224, 138, 58, 0.2);
+}

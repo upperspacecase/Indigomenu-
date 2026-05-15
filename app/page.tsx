@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { Accordion, AccordionItem, LinkItem } from "./Accordion";
 import {
@@ -13,8 +15,14 @@ import {
   WebcamIcon,
   InstagramIcon,
   AllergenIcon,
+  StarIcon,
   type Allergen,
 } from "./icons";
+import { useEffect, useState } from "react";
+import { useLocale } from "./i18n/LocaleProvider";
+import { LanguageSelector } from "./components/LanguageSelector";
+import { CategoryFilter } from "./components/CategoryFilter";
+import { CloseIcon } from "./icons";
 
 type Item = {
   pt: string;
@@ -23,24 +31,32 @@ type Item = {
   descEn?: string;
   price?: string;
   allergens?: Allergen[];
+  bestseller?: boolean;
 };
 
-function MenuItem({ pt, en, desc, descEn, price, allergens }: Item) {
+function MenuItem({ pt, en, desc, descEn, price, allergens, bestseller }: Item) {
+  const { t, resolveCopy, isAllergensFiltered } = useLocale();
+  if (isAllergensFiltered(allergens)) return null;
+  const name = resolveCopy({ pt, en });
+  const description = resolveCopy({ pt: desc, en: descEn });
   return (
     <div className="menu-item">
       <div className="menu-item-head">
-        <span>{pt} <span style={{ fontStyle: "italic", fontWeight: 400, opacity: 0.7 }}>| {en}</span></span>
+        <span>
+          {name}
+          {bestseller && (
+            <span className="bestseller-pill" aria-label={t.bestseller}>
+              <StarIcon />
+              <span>{t.bestseller}</span>
+            </span>
+          )}
+        </span>
         {price && <span>{price}</span>}
       </div>
-      {(desc || descEn) && (
-        <div className="menu-item-desc">
-          {desc}
-          {descEn && <em>{descEn}</em>}
-        </div>
-      )}
+      {description && <div className="menu-item-desc">{description}</div>}
       {allergens && allergens.length > 0 && (
         <div className="allergen-row">
-          <span className="legend">Alergénios</span>
+          <span className="legend">{t.allergensLegend}</span>
           {allergens.map(a => <AllergenIcon key={a} kind={a} />)}
         </div>
       )}
@@ -48,17 +64,33 @@ function MenuItem({ pt, en, desc, descEn, price, allergens }: Item) {
   );
 }
 
-function MenuSection({ title, titleEn, note, children }: { title: string; titleEn?: string; note?: string; children: ReactNode }) {
+function MenuSection({
+  title,
+  titleEn,
+  note,
+  noteEn,
+  children,
+}: {
+  title: string;
+  titleEn?: string;
+  note?: string;
+  noteEn?: string;
+  children: ReactNode;
+}) {
+  const { resolveCopy } = useLocale();
+  const heading = resolveCopy({ pt: title, en: titleEn }) ?? title;
+  const noteText = resolveCopy({ pt: note, en: noteEn });
   return (
     <section className="menu-box">
-      <h3>{title}{titleEn && <> <em>| {titleEn}</em></>}</h3>
-      {note && <p className="menu-note">{note}</p>}
+      <h3>{heading}</h3>
+      {noteText && <p className="menu-note">{noteText}</p>}
       {children}
     </section>
   );
 }
 
 function AllergenLegend() {
+  const { locale } = useLocale();
   const items: { kind: Allergen; pt: string; en: string }[] = [
     { kind: "gluten", pt: "Glúten", en: "Gluten" },
     { kind: "eggs", pt: "Ovos", en: "Eggs" },
@@ -79,7 +111,7 @@ function AllergenLegend() {
       {items.map(i => (
         <div key={i.kind} className="row">
           <AllergenIcon kind={i.kind} />
-          <span>{i.pt} <em>· {i.en}</em></span>
+          <span>{locale === "pt" ? i.pt : i.en}</span>
         </div>
       ))}
     </div>
@@ -93,19 +125,28 @@ const INSTAGRAM_URL = "https://www.instagram.com/indigo_beachclub/";
 const PHONE = "926863781";
 
 export default function Home() {
+  const { t, locale } = useLocale();
+  const showFallbackBanner = locale !== "pt" && locale !== "en";
   return (
     <main className="page">
+      <header className="topbar">
+        <LanguageSelector />
+      </header>
+
+      {showFallbackBanner && <FallbackBanner />}
+
       <div className="logo-wrap">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="Indigo" />
       </div>
 
-      <h1 className="title">Bistro &amp; Beach Bar</h1>
+      <h1 className="title">{t.title}</h1>
 
-      <h2 className="section-heading">MENU</h2>
+      <h2 className="section-heading">{t.section.menu}</h2>
+      <CategoryFilter />
       <Accordion>
-        <AccordionItem id="breakfast" icon={<SunIcon />} title="Pequeno-Almoço | Breakfast">
-          <MenuSection title="Rituais de Amanhecer" titleEn="Sunrise Rituals" note="10:00 — 13:00">
+        <AccordionItem id="breakfast" icon={<SunIcon />} title={t.acc.breakfast}>
+          <MenuSection title="Rituais de Amanhecer" titleEn="Sunrise Rituals" note="10:00 — 13:00" noteEn="10:00 — 13:00">
             <MenuItem pt="Ovos mexidos com abacate" en="Scrambled eggs with avocado"
               desc="Ovos mexidos biológicos, abacate laminado e pão rústico e integral de massa mãe."
               descEn="Scrambled organic eggs, sliced avocado, and rustic and whole wheat sourdough bread"
@@ -125,14 +166,14 @@ export default function Home() {
             <MenuItem pt="Brunch Indigo" en="Indigo Brunch"
               desc="Pão de massa mãe, ovos mexidos biológicos, bacon, panquecas com mel e doce, abacate, fruta, mini gaufre, scone e iogurte com granola e frutos secos. Inclui sumo de laranja e café"
               descEn="Sourdough bread, organic scrambled eggs, bacon, pancakes with honey and jam, avocado, fruit, mini waffle, scone, and yogurt with granola and nuts. Includes orange juice and coffee"
-              price="€ 14.00 / € 22.00 (2 pax)" allergens={["gluten", "eggs", "nuts", "dairy"]} />
+              price="€ 14.00 / € 22.00 (2 pax)" allergens={["gluten", "eggs", "nuts", "dairy"]} bestseller />
           </MenuSection>
 
           <MenuSection title="Sobremesas" titleEn="Sweet Ending">
             <MenuItem pt="Mousse de manga" en="Mango mousse"
               desc="Sobremesa de fusão com manga, lima da região, pistácio crocante e nata vegan"
               descEn="Fusion dessert with mango, local lime, crunchy pistachio and vegan cream"
-              price="€ 8.00" allergens={["nuts"]} />
+              price="€ 8.00" allergens={["nuts"]} bestseller />
             <MenuItem pt="Brownie double fudge" en="Double fudge brownie"
               desc="Double fudge cremoso, cacau intenso e gelado de baunilha."
               descEn="Creamy double fudge brownie, intense cacao, and vanilla gelato"
@@ -162,22 +203,18 @@ export default function Home() {
           <AllergenLegend />
         </AccordionItem>
 
-        <AccordionItem id="coffee" icon={<CoffeeIcon />} title="Café | Coffee">
-          <p className="menu-note">
-            Servimos café de especialidade 100% Arábica, proveniente de lotes com pontuação acima de 86, e torrado pelo The Capsule Cafe, uma torrefação local na Ericeira.
-            <br /><br />
-            <em>We serve 100% Arabica specialty coffee, selected from lots scoring above 86, and roasted by The Capsule Cafe, a local roastery based in Ericeira.</em>
-          </p>
+        <AccordionItem id="coffee" icon={<CoffeeIcon />} title={t.acc.coffee}>
+          <p className="menu-note">{t.coffeeIntro}</p>
 
           <MenuSection title="Quente" titleEn="Hot">
-            <MenuItem pt="Espresso" en="Espresso" price="€ 2.00" />
+            <MenuItem pt="Espresso" en="Espresso" price="€ 2.00" bestseller />
             <MenuItem pt="Espresso Duplo" en="Double Espresso" price="€ 3.00" />
             <MenuItem pt="Americano | Abatanado" en="Americano" price="€ 3.00" />
             <MenuItem pt="Americano com leite" en="Americano with milk" price="€ 4.00" />
             <MenuItem pt="Macchiato Single | Pingado" en="Macchiato" price="€ 3.50" />
             <MenuItem pt="Macchiato Duplo" en="Double Macchiato" price="€ 3.75" />
             <MenuItem pt="Cortado" en="Cortado" price="€ 3.50" />
-            <MenuItem pt="Flat White | Meia de Leite" en="Flat White" price="€ 4.50" />
+            <MenuItem pt="Flat White | Meia de Leite" en="Flat White" price="€ 4.50" bestseller />
             <MenuItem pt="Cappuccino" en="Cappuccino" price="€ 4.50" />
             <MenuItem pt="Latte | Galão" en="Latte" price="€ 4.50" />
             <MenuItem pt="Batch Brew" en="Batch Brew" price="€ 4.00" />
@@ -204,7 +241,7 @@ export default function Home() {
           </MenuSection>
         </AccordionItem>
 
-        <AccordionItem id="coffee-pdf" icon={<CoffeeIcon />} title="Coffee (PDF)" subtitle="Original menu document">
+        <AccordionItem id="coffee-pdf" icon={<CoffeeIcon />} title={t.acc.coffeePdf} subtitle={t.acc.coffeePdfSub}>
           <div className="pdf-pages">
             {[1, 2, 3].map(n => (
               // eslint-disable-next-line @next/next/no-img-element
@@ -213,12 +250,12 @@ export default function Home() {
           </div>
         </AccordionItem>
 
-        <AccordionItem id="food" icon={<ForkKnifeIcon />} title="Comida | Food">
+        <AccordionItem id="food" icon={<ForkKnifeIcon />} title={t.acc.food}>
           <MenuSection title="Aperitivos do Atlântico" titleEn="Atlantic Appetizers">
             <MenuItem pt="Couvert" en="Couvert"
               desc="Crackers de sementes, crackers de queijo e cebola, toast, pão de massa mãe, Hummus, manteiga de ouriço-do-mar e maionese de gambas"
               descEn="Seed crackers, cheese and onion crackers, toast, sourdough bread, hummus, sea urchin butter, and prawn mayonnaise"
-              price="€ 7.00" allergens={["gluten", "eggs", "dairy", "sesame", "crustaceans", "mollusks"]} />
+              price="€ 7.00" allergens={["gluten", "eggs", "dairy", "sesame", "crustaceans", "mollusks"]} bestseller />
             <MenuItem pt="Cesto de Pão" en="Bread Basket"
               desc="Pão integral e pão rústico de massa mãe"
               descEn="Whole wheat bread, and rustic sourdough bread"
@@ -244,7 +281,7 @@ export default function Home() {
             <MenuItem pt="Hambúrguer angus Indigo" en="Indigo Angus burger"
               desc="Pão brioche, carne Angus, cebola caramelizada, queijo cheddar, bacon, tomate e alface"
               descEn="Brioche bun, Angus beef, caramelized onion, cheddar cheese, bacon, tomato, and lettuce"
-              price="€ 18.50" />
+              price="€ 18.50" bestseller />
             <MenuItem pt="Hambúrguer veggie" en="Veggie burger"
               desc="Pão brioche, cogumelos, feijão preto, nozes e cevada perolada, tomate e alface"
               descEn="Brioche bun, mushrooms, black beans, walnuts, and pearl barley, tomato, and lettuce"
@@ -301,7 +338,7 @@ export default function Home() {
               price="€ 16.90" allergens={["gluten", "eggs", "mustard", "crustaceans"]} />
           </MenuSection>
 
-          <MenuSection title="Chef Corner Paelhas" titleEn="Chef Corner Paellas" note="A ritualística da confeção lenta para partilhar à mesa (30 minutos · 2 pax)">
+          <MenuSection title="Chef Corner Paelhas" titleEn="Chef Corner Paellas" note="A ritualística da confeção lenta para partilhar à mesa (30 minutos · 2 pax)" noteEn="The ritual of slow cooking to share at the table (30 minutes · 2 pax)">
             <MenuItem pt="Paelha do mar" en="Sea paella"
               desc="Camarão salteado, lula e vieiras frescas"
               descEn="Sautéed shrimp, squid, and fresh scallops"
@@ -309,7 +346,7 @@ export default function Home() {
             <MenuItem pt="Paelha negra" en="Black paella"
               desc="Choco, camarão e mexilhão em meia concha"
               descEn="Cuttlefish, shrimp, and mussels on the half shell"
-              price="€ 37.00" allergens={["gluten", "eggs", "nuts", "sulphites", "crustaceans", "mollusks"]} />
+              price="€ 37.00" allergens={["gluten", "eggs", "nuts", "sulphites", "crustaceans", "mollusks"]} bestseller />
           </MenuSection>
 
           <MenuSection title="Grelhados" titleEn="The Fire Kitchen (Grill)">
@@ -320,7 +357,7 @@ export default function Home() {
             <MenuItem pt="Especialidade do Chef — Molho à portuguesa 250g" en="Chef's Special — Portuguese sauce 250g"
               desc="Lombo de novilho angus marmoreado, alimentado 200 dias a grão no grill com batata frita caseira e legumes no grill"
               descEn="Marbled Angus beef tenderloin, grain-fed for 200 days, grilled and served with homemade French fries and grilled vegetables"
-              price="€ 55.00" allergens={["gluten", "nuts", "mustard"]} />
+              price="€ 55.00" allergens={["gluten", "nuts", "mustard"]} bestseller />
             <MenuItem pt="Indigo satay" en="Indigo satay"
               desc="Tiras de frango marinadas em gergelim, legumes locais, molho picante de amendoim e ostra, arroz jasmim e caju torrado"
               descEn="Sesame-marinated chicken strips, local vegetables, spicy peanut and oyster sauce, jasmine rice, and toasted cashews"
@@ -348,7 +385,7 @@ export default function Home() {
 
           <MenuSection title="Acompanhamentos" titleEn="Sides">
             <MenuItem pt="Batata frita caseira" en="House fries"
-              desc="Batata caseira fina" descEn="House fries" price="€ 6.50" />
+              desc="Batata caseira fina" descEn="Thin house fries" price="€ 6.50" />
             <MenuItem pt="Arroz branco" en="White rice"
               desc="Arroz branco solto, aromatizado com óleo de gergelim, alho e manteiga"
               descEn="Fluffy steamed white rice flavored with sesame oil, garlic and butter"
@@ -401,7 +438,7 @@ export default function Home() {
           <AllergenLegend />
         </AccordionItem>
 
-        <AccordionItem id="drinks" icon={<CocktailIcon />} title="Bebidas | Drinks">
+        <AccordionItem id="drinks" icon={<CocktailIcon />} title={t.acc.drinks}>
           <MenuSection title="Águas" titleEn="Waters">
             <MenuItem pt="Água Filtrada (75 cl)" en="Filtered Water" price="€ 3.50" />
             <MenuItem pt="Água Filtrada com Gás (75 cl)" en="Filtered Sparkling Water" price="€ 3.50" />
@@ -414,14 +451,16 @@ export default function Home() {
 
           <MenuSection title="Refrigerantes" titleEn="Soft Drinks">
             <MenuItem pt="Sumo em Garrafa" en="Bottled Juice"
-              desc="Coca-Cola, Coca-Cola Zero, Sprite, Fanta, Fuze Tea" price="€ 3.50" />
+              desc="Coca-Cola, Coca-Cola Zero, Sprite, Fanta, Fuze Tea"
+              descEn="Coca-Cola, Coca-Cola Zero, Sprite, Fanta, Fuze Tea"
+              price="€ 3.50" />
             <MenuItem pt="Monster Energy" en="Monster Energy" price="€ 3.50" />
             <MenuItem pt="Schweppes Premium Água Tónica" en="Schweppes Premium Tonic Water"
               desc="Vários Sabores" descEn="Various Flavours" price="€ 3.00" />
             <MenuItem pt="Cerveja de Gengibre" en="Ginger Beer" price="€ 3.00" />
           </MenuSection>
 
-          <MenuSection title="100% Natural" titleEn="">
+          <MenuSection title="100% Natural" titleEn="100% Natural">
             <MenuItem pt="Berry Beat" en="Berry Beat"
               desc="Puré de frutos vermelhos, coco, sumo de limão fresco e agave"
               descEn="Red berry purée, coconut, fresh lemon juice and agave"
@@ -429,7 +468,7 @@ export default function Home() {
             <MenuItem pt="Índigo Lemonade" en="Indigo Lemonade"
               desc="Sumo de limão fresco, sumo de gengibre fresco, hortelã e agave"
               descEn="Fresh lemon juice, fresh ginger juice, mint and agave"
-              price="€ 8.00" />
+              price="€ 8.00" bestseller />
             <MenuItem pt="Orange Carrot" en="Orange Carrot"
               desc="Sumo de laranja e cenoura" descEn="Orange and carrot juice"
               price="€ 8.00" />
@@ -444,7 +483,7 @@ export default function Home() {
             <MenuItem pt="Sumo Natural do Dia" en="Natural Juice of the Day" price="€ 6.00" />
           </MenuSection>
 
-          <MenuSection title="Batidos" titleEn="Milkshakes" note="Opção de leite de amêndoa ou leite de aveia disponível · Almond milk or oat milk option available">
+          <MenuSection title="Batidos" titleEn="Milkshakes" note="Opção de leite de amêndoa ou leite de aveia disponível" noteEn="Almond milk or oat milk option available">
             <MenuItem pt="Maracujá" en="Passion fruit"
               desc="Leite, maracujá e agave." descEn="Milk, passion fruit and agave"
               price="€ 7.00" />
@@ -462,10 +501,12 @@ export default function Home() {
             <MenuItem pt="Desperados (33 cl)" en="Desperados" price="€ 5.00" />
             <MenuItem pt="Bohemia Original" en="Bohemia Original" price="€ 4.00" />
             <MenuItem pt="Bandida do Pomar" en="Bandida do Pomar"
-              desc="Maçã / Apple, Frutos Vermelhos / Red Berries" price="€ 5.00" />
+              desc="Maçã / Frutos Vermelhos"
+              descEn="Apple / Red Berries"
+              price="€ 5.00" />
           </MenuSection>
 
-          <MenuSection title="Sangrias" titleEn="" note="Com duas bases para escolher · With two bases to choose from">
+          <MenuSection title="Sangrias" titleEn="Sangrias" note="Com duas bases para escolher" noteEn="With two bases to choose from">
             <MenuItem pt="Sangria de Sidra — Copo" en="Cider Sangria — Glass" price="€ 12.00" />
             <MenuItem pt="Sangria de Sidra — Jarra (1 L)" en="Cider Sangria — Pitcher" price="€ 32.00" />
             <MenuItem pt="Sangria de Espumante — Copo" en="Sparkling Sangria — Glass" price="€ 12.00" />
@@ -482,7 +523,7 @@ export default function Home() {
             <MenuItem pt="Passion Mojito" en="Passion Mojito"
               desc="Rum, lima, menta fresca, maracujá e bitter"
               descEn="Rum, lime, fresh mint, passion fruit and bitter"
-              price="€ 14.00" />
+              price="€ 14.00" bestseller />
             <MenuItem pt="Índigo Mule" en="Indigo Mule"
               desc="Eristoff Vodka, lima, espuma de gengibre e cerveja de gengibre"
               descEn="Eristoff Vodka, lime, ginger foam and ginger beer."
@@ -508,7 +549,7 @@ export default function Home() {
               price="€ 12.00" />
           </MenuSection>
 
-          <MenuSection title="Spritzes" titleEn="">
+          <MenuSection title="Spritzes" titleEn="Spritzes">
             <MenuItem pt="Martini Fiero Spritz" en="Martini Fiero Spritz"
               desc="Martini Fiero, Martini Prosecco e Água com Gás"
               descEn="Martini Fiero, Martini Prosecco and Soda Water"
@@ -528,7 +569,7 @@ export default function Home() {
             <MenuItem pt="Indigo Spritz" en="Indigo Spritz"
               desc="Vodka Grey Goose, Licor St. Germain, Sumo de Limão Fresco, Martini Prosecco e Bitter de Toranja"
               descEn="Grey Goose Vodka, St. Germain Liqueur, Fresh Lemon Juice, Martini Prosecco and Grapefruit Bitters"
-              price="€ 12.00" />
+              price="€ 12.00" bestseller />
           </MenuSection>
 
           <MenuSection title="Cocktails de Assinatura" titleEn="Signature Cocktails">
@@ -597,10 +638,10 @@ export default function Home() {
           </MenuSection>
         </AccordionItem>
 
-        <AccordionItem id="wine" icon={<WineIcon />} title="Carta de Vinhos | Wine List">
+        <AccordionItem id="wine" icon={<WineIcon />} title={t.acc.wine}>
           <MenuSection title="Vinhos Brancos" titleEn="White Wines">
             <h4>Lisboa</h4>
-            <MenuItem pt="Indigo por Adega Mãe Branco" en="Indigo by Adega Mãe White" price="€ 5.00 / € 21.00" />
+            <MenuItem pt="Indigo por Adega Mãe Branco" en="Indigo by Adega Mãe White" price="€ 5.00 / € 21.00" bestseller />
             <MenuItem pt="Chocapalha Reserva Branco" en="Chocapalha Reserve White" price="€ 36.00" />
             <MenuItem pt="Morgado de Bucelas Arinto" en="Morgado de Bucelas Arinto" price="€ 22.00" />
             <MenuItem pt="Quinta da Boa Esperança Fernão Pires Branco" en="Quinta da Boa Esperança Fernão Pires White" price="€ 23.00" />
@@ -640,7 +681,7 @@ export default function Home() {
 
           <MenuSection title="Vinhos Tintos" titleEn="Red Wines">
             <h4>Lisboa</h4>
-            <MenuItem pt="Indigo por Adega Mãe Tinto" en="Indigo by Adega Mãe Red" price="€ 5.00 / € 22.00" />
+            <MenuItem pt="Indigo por Adega Mãe Tinto" en="Indigo by Adega Mãe Red" price="€ 5.00 / € 22.00" bestseller />
             <MenuItem pt="Adega Mãe Cabernet Sauvignon Tinto" en="Adega Mãe Cabernet Sauvignon Red" price="€ 22.00" />
             <MenuItem pt="Adega Mãe Reserva Tinto" en="Adega Mãe Reserve Red" price="€ 30.00" />
             <MenuItem pt="Casa Santos Lima Pinot Noir Tinto" en="Casa Santos Lima Pinot Noir Red" price="€ 22.00" />
@@ -674,119 +715,153 @@ export default function Home() {
         </AccordionItem>
       </Accordion>
 
-      <h2 className="section-heading">EVENTS</h2>
+      <h2 className="section-heading">{t.section.events}</h2>
       <Accordion>
-        <AccordionItem id="group" icon={<GroupIcon />} title="Menus de Grupo | Group Menus">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="group-cover" src="/images/group/cover-sunset.jpg" alt="Sunset over Foz do Lizandro" />
-
-          <p className="group-quote">
-            Índigo é cozinha contemporânea, para saborear de frente para o mar, entre beats, pranchas, pés na areia, calor do sol e o cheiro a maresia
-          </p>
-          <p>
-            Inspirada no azul forte da Foz do Lizandro, no prato cruzamos simplicidade, rigor e beleza. Cozinha de conforto, às vezes para comer tranquilamente à mão, feita de bons sabores e produtos mediterrânicos, sem esquecer alguns pratos do mundo.
-          </p>
-          <p>
-            <em>
-              Inspired by the strong blue of Foz do Lizandro, our dishes combine simplicity, rigor and beauty. Comfort cuisine, sometimes to be eaten quietly by hand, made with good flavors and Mediterranean products, not forgetting some dishes from around the world.
-            </em>
-          </p>
-
-          <div className="group-collage">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={i} src={`/images/group/collage-${i}.jpg`} alt="" />
-            ))}
-          </div>
-
-          <MenuSection title="Menu € 30" titleEn="" note="Entradas é 1 para 3 pessoas · Starters serve 3">
-            <h4>Couvert</h4>
-            <p className="menu-item-desc">
-              Crackers de sementes, crackers de queijo e cebola, toast, pão de massa mãe, Hummus, manteiga de ouriço-do-mar e maionese de gambas
-              <em>Seed crackers, cheese and onion crackers, toast, sourdough bread, hummus, sea urchin butter, and prawn mayonnaise</em>
-            </p>
-            <h4>Entradas na Mesa</h4>
-            <MenuItem pt="Puntilhitas" en="Mini squid"
-              desc="Mini lulas envolvidas em farinha de milho, lima e molho de lima e cebolinho com maionese de coentros"
-              descEn="Mini squid dusted in corn flour, lime, and lime and chive sauce with coriander mayonnaise" />
-            <MenuItem pt="Croquetas de jamón e vitela (1 para 3 pessoas)" en="Ham and veal croquettes"
-              desc="Bolinhas de presunto ibérico crocantes com mostarda e cebolinho fresco"
-              descEn="Crispy Iberian ham croquettes with mustard and fresh chives" />
-            <h4>Principal</h4>
-            <MenuItem pt="Paelha negra" en="Black paella"
-              desc="Choco, camarão e mexilhão em meia concha"
-              descEn="Cuttlefish, shrimp, and mussels on the half shell" />
-            <h4>Sobremesa</h4>
-            <MenuItem pt="Mousse de manga" en="Mango mousse"
-              desc="Sobremesa de fusão com manga, lima da região, pistácio crocante e nata vegan"
-              descEn="Fusion dessert with mango, local lime, crunchy pistachio and vegan cream" />
-          </MenuSection>
-
-          <MenuSection title="Menu € 60" titleEn="" note="Entradas é 1 para 3 pessoas · Starters serve 3">
-            <h4>Couvert</h4>
-            <p className="menu-item-desc">
-              Crackers de sementes, crackers de queijo e cebola, toast, pão de massa mãe, Hummus, manteiga de ouriço-do-mar e maionese de gambas
-              <em>Seed crackers, cheese and onion crackers, toast, sourdough bread, hummus, sea urchin butter, and prawn mayonnaise</em>
-            </p>
-            <h4>Entradas na Mesa</h4>
-            <MenuItem pt="Pica pau de vitela" en="Veal pica pau"
-              desc="Carne de novilho apurada com alho, louro, vinho branco e pickles. Acompanha pão de massa mãe torrado"
-              descEn="Beef with garlic, bay leaf, white wine, and pickles. Served with toasted sourdough bread" />
-            <MenuItem pt="Camarão à guilho" en="Garlic shrimp"
-              desc="Camarão salteado em azeite e alho, refrescado com vinho branco da região"
-              descEn="Shrimp sautéed in olive oil and garlic, deglazed with local white wine" />
-            <h4>Principal (Escolha seu prato)</h4>
-            <MenuItem pt="Ribeye grelhado 250g" en="Grilled Ribeye 250g"
-              desc="Entrecôte grelhado, legumes no grill e batata frita caseira"
-              descEn="Grilled Angus entrecôte or flank steak, grilled vegetables, and homemade French fries" />
-            <MenuItem pt="Espetinho do mar" en="Sea skewer"
-              desc="Espetada de peixe fresco, camarão e vieira no grill, acompanhada por legumes assados, batata-doce assada com molho de ostras, ponzu, lima, e azeite"
-              descEn="Grilled fish, shrimp, and scallop skewer, served with roasted vegetables, roasted sweet potato with an oyster, ponzu, lime and olive oil sauce" />
-            <MenuItem pt="Paelha veggie" en="Veggie paella"
-              desc="Tofu salteado, bimis, espargos verdes, cogumelos shiitake e tomate cereja assado"
-              descEn="Sautéed tofu, bimi broccoli, green asparagus, shiitake mushrooms, and roasted cherry tomato" />
-            <h4>Sobremesa</h4>
-            <MenuItem pt="Mousse de manga" en="Mango mousse"
-              desc="Sobremesa de fusão com manga, lima da região, pistácio crocante e nata vegan"
-              descEn="Fusion dessert with mango, local lime, crunchy pistachio and vegan cream" />
-          </MenuSection>
-
-          <MenuSection title="Aditivos de Bebidas" titleEn="Beverage Additives" note="Apenas durante o serviço de jantar (aprox. 2h) · Only during dinner service (approx. 2h)">
-            <MenuItem pt="Opção 1" en="Option 1"
-              desc="Bar aberto de: cervejas, vinho da casa, refrigerantes, águas e café"
-              descEn="Open bar: beers, house wine, soft drinks, water and coffee"
-              price="€ 20.00" />
-            <MenuItem pt="Opção 2" en="Option 2"
-              desc="Bar aberto de: sangria, cervejas, vinho da casa, refrigerantes, águas e café"
-              descEn="Open bar: sangria, beers, house wine, soft drinks, water and coffee"
-              price="€ 30.00" />
-            <p className="menu-note">Exclusividade sob consulta · Exclusivity on request</p>
-          </MenuSection>
-
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="group-closing" src="/images/group/beach.jpg" alt="Foz do Lizandro beach at golden hour" />
+        <AccordionItem id="group" icon={<GroupIcon />} title={t.acc.group}>
+          <GroupContent />
         </AccordionItem>
       </Accordion>
 
-      <h2 className="section-heading">MORE</h2>
+      <h2 className="section-heading">{t.section.more}</h2>
       <Accordion>
-        <LinkItem icon={<LocationIcon />} title="Localização | Location" href={LOCATION_URL} />
-        <AccordionItem id="contact" icon={<PhoneIcon />} title="Contacte-nos | Contact Us" subtitle="Indigo Beach Club">
+        <LinkItem icon={<LocationIcon />} title={t.acc.location} href={LOCATION_URL} />
+        <AccordionItem id="contact" icon={<PhoneIcon />} title={t.acc.contact} subtitle="Indigo Beach Club">
           <p className="contact-name">Indigo Beach Club</p>
           <a className="contact-row" href={`tel:${PHONE}`}>
             <PhoneIcon />
             <span>{PHONE}</span>
           </a>
         </AccordionItem>
-        <LinkItem icon={<ReviewIcon />} title="Review your Experience" href={REVIEW_URL} />
-        <LinkItem icon={<WebcamIcon />} title="Foz do Lizandro Beach Cam" href={BEACHCAM_URL} />
-        <LinkItem icon={<InstagramIcon />} title="Instagram" subtitle="@indigo_beachclub" href={INSTAGRAM_URL} />
+        <LinkItem icon={<ReviewIcon />} title={t.acc.review} href={REVIEW_URL} />
+        <LinkItem icon={<WebcamIcon />} title={t.acc.cam} href={BEACHCAM_URL} />
+        <LinkItem icon={<InstagramIcon />} title={t.acc.instagram} subtitle="@indigo_beachclub" href={INSTAGRAM_URL} />
       </Accordion>
 
-      <p className="legal">
-        Preços incluem IVA à taxa legal em vigor.<br />
-        <em>Prices include Value Added Tax at the legal rate in force.</em>
-      </p>
+      <p className="legal">{t.legal}</p>
     </main>
+  );
+}
+
+function FallbackBanner() {
+  const { t, locale } = useLocale();
+  const [dismissed, setDismissed] = useState(false);
+  useEffect(() => {
+    setDismissed(false);
+  }, [locale]);
+  if (dismissed) return null;
+  return (
+    <div className="fallback-banner" role="status">
+      <span>{t.fallbackBanner}</span>
+      <button type="button" onClick={() => setDismissed(true)} aria-label={t.fallbackDismiss}>
+        <CloseIcon />
+      </button>
+    </div>
+  );
+}
+
+function GroupContent() {
+  const { locale, resolveCopy } = useLocale();
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="group-cover" src="/images/group/cover-sunset.jpg" alt="Sunset over Foz do Lizandro" />
+
+      <p className="group-quote">
+        {locale === "pt"
+          ? "Índigo é cozinha contemporânea, para saborear de frente para o mar, entre beats, pranchas, pés na areia, calor do sol e o cheiro a maresia"
+          : "Indigo is contemporary cuisine, to be enjoyed facing the sea, among beats, surfboards, feet in the sand, the warmth of the sun and the scent of the sea breeze"}
+      </p>
+      <p>
+        {resolveCopy({
+          pt: "Inspirada no azul forte da Foz do Lizandro, no prato cruzamos simplicidade, rigor e beleza. Cozinha de conforto, às vezes para comer tranquilamente à mão, feita de bons sabores e produtos mediterrânicos, sem esquecer alguns pratos do mundo.",
+          en: "Inspired by the strong blue of Foz do Lizandro, our dishes combine simplicity, rigor and beauty. Comfort cuisine, sometimes to be eaten quietly by hand, made with good flavors and Mediterranean products, not forgetting some dishes from around the world.",
+        })}
+      </p>
+
+      <div className="group-collage">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={i} src={`/images/group/collage-${i}.jpg`} alt="" />
+        ))}
+      </div>
+
+      <MenuSection title="Menu € 30" titleEn="Menu € 30" note="Entradas é 1 para 3 pessoas" noteEn="Starters serve 3">
+        <h4>Couvert</h4>
+        <p className="menu-item-desc">
+          {resolveCopy({
+            pt: "Crackers de sementes, crackers de queijo e cebola, toast, pão de massa mãe, Hummus, manteiga de ouriço-do-mar e maionese de gambas",
+            en: "Seed crackers, cheese and onion crackers, toast, sourdough bread, hummus, sea urchin butter, and prawn mayonnaise",
+          })}
+        </p>
+        <h4>{locale === "pt" ? "Entradas na Mesa" : "Starters"}</h4>
+        <MenuItem pt="Puntilhitas" en="Mini squid"
+          desc="Mini lulas envolvidas em farinha de milho, lima e molho de lima e cebolinho com maionese de coentros"
+          descEn="Mini squid dusted in corn flour, lime, and lime and chive sauce with coriander mayonnaise" />
+        <MenuItem pt="Croquetas de jamón e vitela (1 para 3 pessoas)" en="Ham and veal croquettes"
+          desc="Bolinhas de presunto ibérico crocantes com mostarda e cebolinho fresco"
+          descEn="Crispy Iberian ham croquettes with mustard and fresh chives" />
+        <h4>{locale === "pt" ? "Principal" : "Main"}</h4>
+        <MenuItem pt="Paelha negra" en="Black paella"
+          desc="Choco, camarão e mexilhão em meia concha"
+          descEn="Cuttlefish, shrimp, and mussels on the half shell" />
+        <h4>{locale === "pt" ? "Sobremesa" : "Dessert"}</h4>
+        <MenuItem pt="Mousse de manga" en="Mango mousse"
+          desc="Sobremesa de fusão com manga, lima da região, pistácio crocante e nata vegan"
+          descEn="Fusion dessert with mango, local lime, crunchy pistachio and vegan cream" />
+      </MenuSection>
+
+      <MenuSection title="Menu € 60" titleEn="Menu € 60" note="Entradas é 1 para 3 pessoas" noteEn="Starters serve 3">
+        <h4>Couvert</h4>
+        <p className="menu-item-desc">
+          {resolveCopy({
+            pt: "Crackers de sementes, crackers de queijo e cebola, toast, pão de massa mãe, Hummus, manteiga de ouriço-do-mar e maionese de gambas",
+            en: "Seed crackers, cheese and onion crackers, toast, sourdough bread, hummus, sea urchin butter, and prawn mayonnaise",
+          })}
+        </p>
+        <h4>{locale === "pt" ? "Entradas na Mesa" : "Starters"}</h4>
+        <MenuItem pt="Pica pau de vitela" en="Veal pica pau"
+          desc="Carne de novilho apurada com alho, louro, vinho branco e pickles. Acompanha pão de massa mãe torrado"
+          descEn="Beef with garlic, bay leaf, white wine, and pickles. Served with toasted sourdough bread" />
+        <MenuItem pt="Camarão à guilho" en="Garlic shrimp"
+          desc="Camarão salteado em azeite e alho, refrescado com vinho branco da região"
+          descEn="Shrimp sautéed in olive oil and garlic, deglazed with local white wine" />
+        <h4>{locale === "pt" ? "Principal (Escolha seu prato)" : "Main (Your choice)"}</h4>
+        <MenuItem pt="Ribeye grelhado 250g" en="Grilled Ribeye 250g"
+          desc="Entrecôte grelhado, legumes no grill e batata frita caseira"
+          descEn="Grilled Angus entrecôte or flank steak, grilled vegetables, and homemade French fries" />
+        <MenuItem pt="Espetinho do mar" en="Sea skewer"
+          desc="Espetada de peixe fresco, camarão e vieira no grill, acompanhada por legumes assados, batata-doce assada com molho de ostras, ponzu, lima, e azeite"
+          descEn="Grilled fish, shrimp, and scallop skewer, served with roasted vegetables, roasted sweet potato with an oyster, ponzu, lime and olive oil sauce" />
+        <MenuItem pt="Paelha veggie" en="Veggie paella"
+          desc="Tofu salteado, bimis, espargos verdes, cogumelos shiitake e tomate cereja assado"
+          descEn="Sautéed tofu, bimi broccoli, green asparagus, shiitake mushrooms, and roasted cherry tomato" />
+        <h4>{locale === "pt" ? "Sobremesa" : "Dessert"}</h4>
+        <MenuItem pt="Mousse de manga" en="Mango mousse"
+          desc="Sobremesa de fusão com manga, lima da região, pistácio crocante e nata vegan"
+          descEn="Fusion dessert with mango, local lime, crunchy pistachio and vegan cream" />
+      </MenuSection>
+
+      <MenuSection
+        title="Aditivos de Bebidas"
+        titleEn="Beverage Additives"
+        note="Apenas durante o serviço de jantar (aprox. 2h)"
+        noteEn="Only during dinner service (approx. 2h)"
+      >
+        <MenuItem pt="Opção 1" en="Option 1"
+          desc="Bar aberto de: cervejas, vinho da casa, refrigerantes, águas e café"
+          descEn="Open bar: beers, house wine, soft drinks, water and coffee"
+          price="€ 20.00" />
+        <MenuItem pt="Opção 2" en="Option 2"
+          desc="Bar aberto de: sangria, cervejas, vinho da casa, refrigerantes, águas e café"
+          descEn="Open bar: sangria, beers, house wine, soft drinks, water and coffee"
+          price="€ 30.00" />
+        <p className="menu-note">
+          {locale === "pt" ? "Exclusividade sob consulta" : "Exclusivity on request"}
+        </p>
+      </MenuSection>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="group-closing" src="/images/group/beach.jpg" alt="Foz do Lizandro beach at golden hour" />
+    </>
   );
 }

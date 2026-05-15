@@ -11,6 +11,7 @@ type Product = {
   price: string;
   allergens: string[];
   active: boolean;
+  bestseller?: boolean;
 };
 
 type Category = {
@@ -30,10 +31,10 @@ const CATEGORIES: Category[] = [
 
 const SAMPLE_BY_CATEGORY: Record<string, Product[]> = {
   breakfast: [
-    { id: "br-1", pt: "Ovos mexidos com abacate", en: "Scrambled eggs with avocado", desc: "Ovos mexidos biológicos, abacate laminado e pão rústico e integral de massa mãe.", descEn: "Scrambled organic eggs, sliced avocado, and rustic and whole wheat sourdough bread", price: "9.80", allergens: ["gluten", "eggs"], active: true },
+    { id: "br-1", pt: "Ovos mexidos com abacate", en: "Scrambled eggs with avocado", desc: "Ovos mexidos biológicos, abacate laminado e pão rústico e integral de massa mãe.", descEn: "Scrambled organic eggs, sliced avocado, and rustic and whole wheat sourdough bread", price: "9.80", allergens: ["gluten", "eggs"], active: true, bestseller: true },
     { id: "br-2", pt: "Bacon e ovo", en: "Bacon & egg", desc: "Bacon tostado, croissant, ovo estrelado biológico e panquecas artesanais", descEn: "Toasted bacon, croissant, fried organic egg, and artisanal pancakes", price: "8.90", allergens: ["gluten", "eggs", "dairy"], active: true },
     { id: "br-3", pt: "Panquecas com fruta", en: "Pancakes with fruit", desc: "Panquecas artesanais, morangos frescos, banana, mel regional e frutos secos", descEn: "Artisanal pancakes, fresh strawberries, banana, regional honey, and nuts", price: "8.50", allergens: ["gluten", "eggs", "nuts", "dairy"], active: true },
-    { id: "br-4", pt: "Brunch Indigo", en: "Indigo Brunch", desc: "Pão de massa mãe, ovos mexidos biológicos, bacon, panquecas com mel e doce, abacate, fruta, mini gaufre, scone e iogurte. Inclui sumo de laranja e café", descEn: "Sourdough bread, organic scrambled eggs, bacon, pancakes with honey and jam, avocado, fruit, mini waffle, scone, and yogurt. Includes orange juice and coffee", price: "14.00", allergens: ["gluten", "eggs", "nuts", "dairy"], active: true },
+    { id: "br-4", pt: "Brunch Indigo", en: "Indigo Brunch", desc: "Pão de massa mãe, ovos mexidos biológicos, bacon, panquecas com mel e doce, abacate, fruta, mini gaufre, scone e iogurte. Inclui sumo de laranja e café", descEn: "Sourdough bread, organic scrambled eggs, bacon, pancakes with honey and jam, avocado, fruit, mini waffle, scone, and yogurt. Includes orange juice and coffee", price: "14.00", allergens: ["gluten", "eggs", "nuts", "dairy"], active: true, bestseller: true },
     { id: "br-5", pt: "Mousse de manga", en: "Mango mousse", desc: "Sobremesa de fusão com manga, lima da região, pistácio crocante e nata vegan", descEn: "Fusion dessert with mango, local lime, crunchy pistachio and vegan cream", price: "8.00", allergens: ["nuts"], active: true },
   ],
   coffee: [
@@ -46,12 +47,12 @@ const SAMPLE_BY_CATEGORY: Record<string, Product[]> = {
   ],
   food: [
     { id: "fo-1", pt: "Couvert", en: "Couvert", desc: "Crackers de sementes, queijo e cebola, pão de massa mãe, hummus, manteiga de ouriço-do-mar e maionese de gambas", descEn: "Seed crackers, cheese and onion crackers, toast, sourdough bread, hummus, sea urchin butter, and prawn mayonnaise", price: "7.00", allergens: ["gluten", "eggs", "dairy", "sesame", "crustaceans", "mollusks"], active: true },
-    { id: "fo-2", pt: "Hambúrguer angus Indigo", en: "Indigo Angus burger", desc: "Pão brioche, carne Angus, cebola caramelizada, queijo cheddar, bacon, tomate e alface", descEn: "Brioche bun, Angus beef, caramelized onion, cheddar cheese, bacon, tomato, and lettuce", price: "18.50", allergens: ["gluten", "eggs", "dairy"], active: true },
+    { id: "fo-2", pt: "Hambúrguer angus Indigo", en: "Indigo Angus burger", desc: "Pão brioche, carne Angus, cebola caramelizada, queijo cheddar, bacon, tomate e alface", descEn: "Brioche bun, Angus beef, caramelized onion, cheddar cheese, bacon, tomato, and lettuce", price: "18.50", allergens: ["gluten", "eggs", "dairy"], active: true, bestseller: true },
     { id: "fo-3", pt: "Paelha negra", en: "Black paella", desc: "Choco, camarão e mexilhão em meia concha (30 min · 2 pax)", descEn: "Cuttlefish, shrimp, and mussels on the half shell", price: "37.00", allergens: ["gluten", "eggs", "nuts", "sulphites", "crustaceans", "mollusks"], active: true },
     { id: "fo-4", pt: "Indigo satay", en: "Indigo satay", desc: "Tiras de frango marinadas em gergelim, legumes locais, molho picante de amendoim e ostra, arroz jasmim e caju torrado", descEn: "Sesame-marinated chicken strips, local vegetables, spicy peanut and oyster sauce, jasmine rice, and toasted cashews", price: "23.90", allergens: ["nuts", "sesame", "peanuts", "soja", "mollusks"], active: true },
   ],
   drinks: [
-    { id: "dr-1", pt: "Indigo Spritz", en: "Indigo Spritz", desc: "Vodka Grey Goose, Licor St. Germain, Sumo de Limão, Martini Prosecco e Bitter de Toranja", descEn: "Grey Goose Vodka, St. Germain Liqueur, Fresh Lemon Juice, Martini Prosecco and Grapefruit Bitters", price: "12.00", allergens: [], active: true },
+    { id: "dr-1", pt: "Indigo Spritz", en: "Indigo Spritz", desc: "Vodka Grey Goose, Licor St. Germain, Sumo de Limão, Martini Prosecco e Bitter de Toranja", descEn: "Grey Goose Vodka, St. Germain Liqueur, Fresh Lemon Juice, Martini Prosecco and Grapefruit Bitters", price: "12.00", allergens: [], active: true, bestseller: true },
     { id: "dr-2", pt: "Passion Mojito", en: "Passion Mojito", desc: "Rum, lima, menta fresca, maracujá e bitter", descEn: "Rum, lime, fresh mint, passion fruit and bitter", price: "14.00", allergens: [], active: true },
     { id: "dr-3", pt: "Índigo Lemonade", en: "Indigo Lemonade", desc: "Sumo de limão fresco, gengibre fresco, hortelã e agave", descEn: "Fresh lemon juice, fresh ginger juice, mint and agave", price: "8.00", allergens: [], active: true },
   ],
@@ -73,7 +74,7 @@ export default function AdminPanel() {
   const [adding, setAdding] = useState(false);
 
   const products = SAMPLE_BY_CATEGORY[activeCat] ?? [];
-  const blank: Product = { id: "new", pt: "", en: "", desc: "", descEn: "", price: "", allergens: [], active: true };
+  const blank: Product = { id: "new", pt: "", en: "", desc: "", descEn: "", price: "", allergens: [], active: true, bestseller: false };
   const form = editing ?? (adding ? blank : null);
 
   return (
@@ -131,9 +132,10 @@ export default function AdminPanel() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ width: "30%" }}>Nome (PT / EN)</th>
+                <th style={{ width: "28%" }}>Nome (PT / EN)</th>
                 <th>Descrição</th>
-                <th style={{ width: 100 }}>Preço</th>
+                <th style={{ width: 90 }}>Preço</th>
+                <th style={{ width: 110 }}>Mais vendido</th>
                 <th style={{ width: 150 }}>Alergénios</th>
                 <th style={{ width: 90 }}>Estado</th>
                 <th style={{ width: 90 }}>Acções</th>
@@ -150,6 +152,18 @@ export default function AdminPanel() {
                     <div className="admin-desc">{p.desc || "—"}</div>
                   </td>
                   <td>€ {p.price}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className={`admin-bestseller-toggle ${p.bestseller ? "on" : "off"}`}
+                      aria-pressed={!!p.bestseller}
+                      aria-label="Mais vendido"
+                      onClick={() => {/* mock toggle */}}
+                    >
+                      <span className="admin-bestseller-dot" />
+                      {p.bestseller ? "Sim" : "Não"}
+                    </button>
+                  </td>
                   <td>
                     <div className="admin-tags">
                       {p.allergens.length === 0 && <span className="admin-tag muted">nenhum</span>}
@@ -238,6 +252,11 @@ export default function AdminPanel() {
             <label className="admin-toggle">
               <input type="checkbox" defaultChecked={form.active} />
               <span>Visível no site público</span>
+            </label>
+
+            <label className="admin-toggle">
+              <input type="checkbox" defaultChecked={!!form.bestseller} />
+              <span>Marcar como &ldquo;Mais vendido&rdquo; (mostra estrela no site)</span>
             </label>
 
             <div className="admin-form-footer">
