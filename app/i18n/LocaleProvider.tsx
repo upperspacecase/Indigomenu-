@@ -17,6 +17,7 @@ import {
   type Locale,
   locales,
 } from "./dictionary";
+import { lookupMenuTranslation } from "./menuTranslations";
 
 type FilterKey = keyof Dictionary["diet"];
 
@@ -73,6 +74,14 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const resolveCopy = useCallback(
     (input: { pt?: string; en?: string }) => {
       if (locale === "pt") return input.pt ?? input.en;
+      if (locale === "en") return input.en ?? input.pt;
+      // For es/fr/de/nl, look up the english string in the translation table.
+      // Missing entries fall back to English silently — common across these
+      // tourist languages and avoids placeholder banners.
+      if (input.en) {
+        const t = lookupMenuTranslation(input.en, locale);
+        if (t) return t;
+      }
       return input.en ?? input.pt;
     },
     [locale],

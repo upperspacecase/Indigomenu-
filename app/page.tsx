@@ -18,11 +18,9 @@ import {
   StarIcon,
   type Allergen,
 } from "./icons";
-import { useEffect, useState } from "react";
 import { useLocale } from "./i18n/LocaleProvider";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { CategoryFilter } from "./components/CategoryFilter";
-import { CloseIcon } from "./icons";
 
 type Item = {
   pt: string;
@@ -125,15 +123,12 @@ const INSTAGRAM_URL = "https://www.instagram.com/indigo_beachclub/";
 const PHONE = "926863781";
 
 export default function Home() {
-  const { t, locale } = useLocale();
-  const showFallbackBanner = locale !== "pt" && locale !== "en";
+  const { t } = useLocale();
   return (
     <main className="page">
       <header className="topbar">
         <LanguageSelector />
       </header>
-
-      {showFallbackBanner && <FallbackBanner />}
 
       <div className="logo-wrap">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -742,34 +737,18 @@ export default function Home() {
   );
 }
 
-function FallbackBanner() {
-  const { t, locale } = useLocale();
-  const [dismissed, setDismissed] = useState(false);
-  useEffect(() => {
-    setDismissed(false);
-  }, [locale]);
-  if (dismissed) return null;
-  return (
-    <div className="fallback-banner" role="status">
-      <span>{t.fallbackBanner}</span>
-      <button type="button" onClick={() => setDismissed(true)} aria-label={t.fallbackDismiss}>
-        <CloseIcon />
-      </button>
-    </div>
-  );
-}
-
 function GroupContent() {
-  const { locale, resolveCopy } = useLocale();
+  const { resolveCopy } = useLocale();
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="group-cover" src="/images/group/cover-sunset.jpg" alt="Sunset over Foz do Lizandro" />
 
       <p className="group-quote">
-        {locale === "pt"
-          ? "Índigo é cozinha contemporânea, para saborear de frente para o mar, entre beats, pranchas, pés na areia, calor do sol e o cheiro a maresia"
-          : "Indigo is contemporary cuisine, to be enjoyed facing the sea, among beats, surfboards, feet in the sand, the warmth of the sun and the scent of the sea breeze"}
+        {resolveCopy({
+          pt: "Índigo é cozinha contemporânea, para saborear de frente para o mar, entre beats, pranchas, pés na areia, calor do sol e o cheiro a maresia",
+          en: "Indigo is contemporary cuisine, to be enjoyed facing the sea, among beats, surfboards, feet in the sand, the warmth of the sun and the scent of the sea breeze",
+        })}
       </p>
       <p>
         {resolveCopy({
@@ -793,18 +772,18 @@ function GroupContent() {
             en: "Seed crackers, cheese and onion crackers, toast, sourdough bread, hummus, sea urchin butter, and prawn mayonnaise",
           })}
         </p>
-        <h4>{locale === "pt" ? "Entradas na Mesa" : "Starters"}</h4>
+        <h4>{resolveCopy({ pt: "Entradas na Mesa", en: "Starters" })}</h4>
         <MenuItem pt="Puntilhitas" en="Mini squid"
           desc="Mini lulas envolvidas em farinha de milho, lima e molho de lima e cebolinho com maionese de coentros"
           descEn="Mini squid dusted in corn flour, lime, and lime and chive sauce with coriander mayonnaise" />
         <MenuItem pt="Croquetas de jamón e vitela (1 para 3 pessoas)" en="Ham and veal croquettes"
           desc="Bolinhas de presunto ibérico crocantes com mostarda e cebolinho fresco"
           descEn="Crispy Iberian ham croquettes with mustard and fresh chives" />
-        <h4>{locale === "pt" ? "Principal" : "Main"}</h4>
+        <h4>{resolveCopy({ pt: "Principal", en: "Main" })}</h4>
         <MenuItem pt="Paelha negra" en="Black paella"
           desc="Choco, camarão e mexilhão em meia concha"
           descEn="Cuttlefish, shrimp, and mussels on the half shell" />
-        <h4>{locale === "pt" ? "Sobremesa" : "Dessert"}</h4>
+        <h4>{resolveCopy({ pt: "Sobremesa", en: "Dessert" })}</h4>
         <MenuItem pt="Mousse de manga" en="Mango mousse"
           desc="Sobremesa de fusão com manga, lima da região, pistácio crocante e nata vegan"
           descEn="Fusion dessert with mango, local lime, crunchy pistachio and vegan cream" />
@@ -818,14 +797,14 @@ function GroupContent() {
             en: "Seed crackers, cheese and onion crackers, toast, sourdough bread, hummus, sea urchin butter, and prawn mayonnaise",
           })}
         </p>
-        <h4>{locale === "pt" ? "Entradas na Mesa" : "Starters"}</h4>
+        <h4>{resolveCopy({ pt: "Entradas na Mesa", en: "Starters" })}</h4>
         <MenuItem pt="Pica pau de vitela" en="Veal pica pau"
           desc="Carne de novilho apurada com alho, louro, vinho branco e pickles. Acompanha pão de massa mãe torrado"
           descEn="Beef with garlic, bay leaf, white wine, and pickles. Served with toasted sourdough bread" />
         <MenuItem pt="Camarão à guilho" en="Garlic shrimp"
           desc="Camarão salteado em azeite e alho, refrescado com vinho branco da região"
           descEn="Shrimp sautéed in olive oil and garlic, deglazed with local white wine" />
-        <h4>{locale === "pt" ? "Principal (Escolha seu prato)" : "Main (Your choice)"}</h4>
+        <h4>{resolveCopy({ pt: "Principal (Escolha seu prato)", en: "Main (Your choice)" })}</h4>
         <MenuItem pt="Ribeye grelhado 250g" en="Grilled Ribeye 250g"
           desc="Entrecôte grelhado, legumes no grill e batata frita caseira"
           descEn="Grilled Angus entrecôte or flank steak, grilled vegetables, and homemade French fries" />
@@ -835,7 +814,7 @@ function GroupContent() {
         <MenuItem pt="Paelha veggie" en="Veggie paella"
           desc="Tofu salteado, bimis, espargos verdes, cogumelos shiitake e tomate cereja assado"
           descEn="Sautéed tofu, bimi broccoli, green asparagus, shiitake mushrooms, and roasted cherry tomato" />
-        <h4>{locale === "pt" ? "Sobremesa" : "Dessert"}</h4>
+        <h4>{resolveCopy({ pt: "Sobremesa", en: "Dessert" })}</h4>
         <MenuItem pt="Mousse de manga" en="Mango mousse"
           desc="Sobremesa de fusão com manga, lima da região, pistácio crocante e nata vegan"
           descEn="Fusion dessert with mango, local lime, crunchy pistachio and vegan cream" />
@@ -856,7 +835,7 @@ function GroupContent() {
           descEn="Open bar: sangria, beers, house wine, soft drinks, water and coffee"
           price="€ 30.00" />
         <p className="menu-note">
-          {locale === "pt" ? "Exclusividade sob consulta" : "Exclusivity on request"}
+          {resolveCopy({ pt: "Exclusividade sob consulta", en: "Exclusivity on request" })}
         </p>
       </MenuSection>
 
